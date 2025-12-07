@@ -90,7 +90,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({ onPr
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 30,
     right: 20,
     width: 64,
     height: 64,

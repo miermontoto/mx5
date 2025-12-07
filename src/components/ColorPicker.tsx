@@ -1,16 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Animated, {
-  Easing,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withSequence,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
 import { COLORS, SHADOWS } from '../constants';
 
 interface ColorPickerProps {
@@ -33,84 +23,23 @@ const PRESET_COLORS = [
 ];
 
 const { width: screenWidth } = Dimensions.get('window');
-const COLUMNS = screenWidth > 600 ? 6 : 4; // More columns on tablets
-const MAX_ITEM_SIZE = 75; // Maximum size for each item
+const COLUMNS = screenWidth > 600 ? 6 : 4;
+const MAX_ITEM_SIZE = 75;
 const PADDING = 40;
 const ITEM_SIZE = Math.min(MAX_ITEM_SIZE, (screenWidth - PADDING - (COLUMNS * 16)) / COLUMNS);
-
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface ColorItemProps {
   preset: typeof PRESET_COLORS[0];
   isSelected: boolean;
   onPress: () => void;
-  index: number;
 }
 
-const ColorItem: React.FC<ColorItemProps> = ({ preset, isSelected, onPress, index }) => {
-  const scale = useSharedValue(0);
-  const rotation = useSharedValue(0);
-  const opacity = useSharedValue(0);
-  const borderScale = useSharedValue(isSelected ? 1 : 0);
-
-  useEffect(() => {
-    // Entrance animation
-    opacity.value = withDelay(
-      index * 20,
-      withTiming(1, { duration: 100, easing: Easing.out(Easing.ease) })
-    );
-    scale.value = withDelay(
-      index * 20,
-      withSpring(1, { damping: 15, stiffness: 400 })
-    );
-  }, []);
-
-  useEffect(() => {
-    borderScale.value = withSpring(isSelected ? 1 : 0, {
-      damping: 15,
-      stiffness: 300,
-    });
-  }, [isSelected]);
-
-  const handlePress = () => {
-    scale.value = withSequence(
-      withSpring(0.85, { damping: 10, stiffness: 400 }),
-      withSpring(1, { damping: 15, stiffness: 200 })
-    );
-    rotation.value = withSequence(
-      withTiming(5, { duration: 30 }),
-      withTiming(-5, { duration: 30 }),
-      withTiming(0, { duration: 30 })
-    );
-    onPress();
-  };
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { rotate: `${rotation.value}deg` },
-    ],
-    opacity: opacity.value,
-  }));
-
-  const borderStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: borderScale.value }],
-    opacity: borderScale.value,
-  }));
-
-  const checkStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: interpolate(borderScale.value, [0, 1], [0, 1]) },
-      { rotate: `${interpolate(borderScale.value, [0, 1], [-180, 0])}deg` },
-    ],
-    opacity: borderScale.value,
-  }));
-
+const ColorItem: React.FC<ColorItemProps> = ({ preset, isSelected, onPress }) => {
   return (
-    <AnimatedTouchableOpacity
-      style={[styles.colorItem, animatedStyle]}
-      onPress={handlePress}
-      activeOpacity={0.9}
+    <TouchableOpacity
+      style={styles.colorItem}
+      onPress={onPress}
+      activeOpacity={0.7}
     >
       <View style={styles.colorContainer}>
         <LinearGradient
@@ -120,11 +49,14 @@ const ColorItem: React.FC<ColorItemProps> = ({ preset, isSelected, onPress, inde
           style={styles.colorGradient}
         />
 
-        <Animated.View style={[styles.selectedBorder, borderStyle]} />
-
-        <Animated.View style={[styles.checkContainer, checkStyle]}>
-          <Text style={styles.checkmark}>✓</Text>
-        </Animated.View>
+        {isSelected && (
+          <>
+            <View style={styles.selectedBorder} />
+            <View style={styles.checkContainer}>
+              <Text style={styles.checkmark}>✓</Text>
+            </View>
+          </>
+        )}
       </View>
 
       <Text style={[
@@ -133,23 +65,13 @@ const ColorItem: React.FC<ColorItemProps> = ({ preset, isSelected, onPress, inde
       ]} numberOfLines={1}>
         {preset.name}
       </Text>
-    </AnimatedTouchableOpacity>
+    </TouchableOpacity>
   );
 };
 
 export const ColorPicker: React.FC<ColorPickerProps> = ({ selectedColor, onColorSelect }) => {
-  const containerScale = useSharedValue(0.95);
-
-  useEffect(() => {
-    containerScale.value = withSpring(1, { damping: 20, stiffness: 150 });
-  }, []);
-
-  const containerStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: containerScale.value }],
-  }));
-
   return (
-    <Animated.View style={[styles.container, containerStyle]}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.label}>COLOR DE ACENTO</Text>
         <View style={[styles.currentColorBadge, { backgroundColor: selectedColor + '20' }]}>
@@ -161,17 +83,16 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ selectedColor, onColor
       </View>
 
       <View style={styles.grid}>
-        {PRESET_COLORS.map((preset, index) => (
+        {PRESET_COLORS.map((preset) => (
           <ColorItem
             key={preset.color}
             preset={preset}
             isSelected={selectedColor === preset.color}
             onPress={() => onColorSelect(preset.color)}
-            index={index}
           />
         ))}
       </View>
-    </Animated.View>
+    </View>
   );
 };
 
