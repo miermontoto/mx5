@@ -111,7 +111,7 @@ export const SettingsScreen = () => {
 
       <Animated.View
         entering={SlideInDown.delay(100).springify()}
-        style={styles.section}
+        style={[styles.section, { marginBottom: 0 }]}
       >
         <Text style={styles.sectionTitle}>LÍMITES</Text>
 

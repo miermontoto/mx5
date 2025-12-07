@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { COLORS, SHADOWS } from '../constants';
 
 interface ColorPickerProps {
@@ -22,76 +23,77 @@ const PRESET_COLORS = [
   { name: 'Sunset Orange', color: '#FF4500', gradient: ['#FF4500', '#FF6347'] as [string, string] },
 ];
 
-const { width: screenWidth } = Dimensions.get('window');
-const COLUMNS = screenWidth > 600 ? 6 : 4;
-const MAX_ITEM_SIZE = 75;
-const PADDING = 40;
-const ITEM_SIZE = Math.min(MAX_ITEM_SIZE, (screenWidth - PADDING - (COLUMNS * 16)) / COLUMNS);
-
-interface ColorItemProps {
-  preset: typeof PRESET_COLORS[0];
-  isSelected: boolean;
-  onPress: () => void;
-}
-
-const ColorItem: React.FC<ColorItemProps> = ({ preset, isSelected, onPress }) => {
-  return (
-    <TouchableOpacity
-      style={styles.colorItem}
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
-      <View style={styles.colorContainer}>
-        <LinearGradient
-          colors={preset.gradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.colorGradient}
-        />
-
-        {isSelected && (
-          <>
-            <View style={styles.selectedBorder} />
-            <View style={styles.checkContainer}>
-              <Text style={styles.checkmark}>✓</Text>
-            </View>
-          </>
-        )}
-      </View>
-
-      <Text style={[
-        styles.colorName,
-        isSelected && styles.selectedName
-      ]} numberOfLines={1}>
-        {preset.name}
-      </Text>
-    </TouchableOpacity>
-  );
-};
-
 export const ColorPicker: React.FC<ColorPickerProps> = ({ selectedColor, onColorSelect }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectedPreset = PRESET_COLORS.find(c => c.color === selectedColor);
+
+  const handleSelect = (color: string) => {
+    onColorSelect(color);
+    setIsOpen(false);
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.label}>COLOR DE ACENTO</Text>
-        <View style={[styles.currentColorBadge, { backgroundColor: selectedColor + '20' }]}>
-          <View style={[styles.currentColorDot, { backgroundColor: selectedColor }]} />
-          <Text style={[styles.currentColorText, { color: selectedColor }]}>
-            {PRESET_COLORS.find(c => c.color === selectedColor)?.name || 'Custom'}
+      <Text style={styles.label}>COLOR DE ACENTO</Text>
+
+      <TouchableOpacity
+        style={styles.dropdown}
+        onPress={() => setIsOpen(true)}
+        activeOpacity={0.7}
+      >
+        <View style={styles.selectedOption}>
+          <View style={[styles.colorDot, { backgroundColor: selectedColor }]} />
+          <Text style={styles.selectedText}>
+            {selectedPreset?.name || 'Custom'}
           </Text>
         </View>
-      </View>
+        <Ionicons name="chevron-down" size={20} color={COLORS.textSecondary} />
+      </TouchableOpacity>
 
-      <View style={styles.grid}>
-        {PRESET_COLORS.map((preset) => (
-          <ColorItem
-            key={preset.color}
-            preset={preset}
-            isSelected={selectedColor === preset.color}
-            onPress={() => onColorSelect(preset.color)}
-          />
-        ))}
-      </View>
+      <Modal
+        visible={isOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setIsOpen(false)}
+      >
+        <Pressable style={styles.overlay} onPress={() => setIsOpen(false)}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Seleccionar color</Text>
+              <TouchableOpacity onPress={() => setIsOpen(false)}>
+                <Ionicons name="close" size={24} color={COLORS.textSecondary} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.optionsList} showsVerticalScrollIndicator={false}>
+              {PRESET_COLORS.map((preset) => {
+                const isSelected = selectedColor === preset.color;
+                return (
+                  <TouchableOpacity
+                    key={preset.color}
+                    style={[styles.option, isSelected && styles.optionSelected]}
+                    onPress={() => handleSelect(preset.color)}
+                    activeOpacity={0.7}
+                  >
+                    <LinearGradient
+                      colors={preset.gradient}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.optionColorDot}
+                    />
+                    <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
+                      {preset.name}
+                    </Text>
+                    {isSelected && (
+                      <Ionicons name="checkmark" size={20} color={COLORS.text} />
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 };
@@ -100,95 +102,92 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: 16,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-    flexWrap: 'wrap',
-    gap: 12,
-  },
   label: {
     fontSize: 12,
     color: COLORS.textSecondary,
     letterSpacing: 2,
     fontWeight: '600',
+    marginBottom: 12,
   },
-  currentColorBadge: {
+  dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+    justifyContent: 'space-between',
+    backgroundColor: COLORS.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  selectedOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  colorDot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    marginRight: 12,
+  },
+  selectedText: {
+    fontSize: 16,
+    color: COLORS.text,
+    fontWeight: '500',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: COLORS.background,
+    borderRadius: 16,
+    width: '100%',
+    maxWidth: 340,
+    maxHeight: '70%',
+    ...SHADOWS.large,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: COLORS.text,
+  },
+  optionsList: {
+    padding: 8,
+  },
+  option: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 10,
+    marginVertical: 2,
+  },
+  optionSelected: {
     backgroundColor: COLORS.surface,
   },
-  currentColorDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 8,
-  },
-  currentColorText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: -8,
-    justifyContent: 'center',
-  },
-  colorItem: {
-    width: ITEM_SIZE + 16,
-    alignItems: 'center',
-    marginBottom: 20,
-    paddingHorizontal: 8,
-  },
-  colorContainer: {
-    width: ITEM_SIZE,
-    height: ITEM_SIZE,
-    marginBottom: 8,
-    position: 'relative',
-  },
-  colorGradient: {
-    width: '100%',
-    height: '100%',
+  optionColorDot: {
+    width: 32,
+    height: 32,
     borderRadius: 16,
-    ...SHADOWS.medium,
+    marginRight: 12,
   },
-  selectedBorder: {
-    position: 'absolute',
-    top: -4,
-    left: -4,
-    right: -4,
-    bottom: -4,
-    borderRadius: 20,
-    borderWidth: 3,
-    borderColor: COLORS.text,
+  optionText: {
+    flex: 1,
+    fontSize: 16,
+    color: COLORS.textSecondary,
   },
-  checkContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    borderRadius: 16,
-  },
-  checkmark: {
-    color: COLORS.text,
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  colorName: {
-    fontSize: 11,
-    color: COLORS.textTertiary,
-    textAlign: 'center',
-    paddingHorizontal: 4,
-  },
-  selectedName: {
+  optionTextSelected: {
     color: COLORS.text,
     fontWeight: '600',
   },
