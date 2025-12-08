@@ -1,8 +1,8 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { differenceInDays } from 'date-fns';
 import React, { useCallback, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { MainCard } from '../components/MainCard';
 import { MainStat } from '../components/MainStat';
@@ -71,48 +71,48 @@ export const DashboardScreen = () => {
       >
         <Text style={styles.header}>{t('dashboard.header')}</Text>
 
-      <MainCard totalKm={totalKm} percentage={percentage} />
+        <MainCard totalKm={totalKm} percentage={percentage} />
 
-      {/* Primary stats */}
-      <View style={styles.primaryStats}>
-        <MainStat
-          label={t('dashboard.difference')}
-          value={variance}
-          unit="km"
-          subtitle={t('dashboard.target', { value: targetKm.toFixed(0) })}
-          color={varianceColor}
-          showSign
-        />
-        <View style={styles.divider} />
-        <MainStat
-          label={t('dashboard.projection')}
-          value={projectedTotal}
-          unit="km"
-          color={projectedColor}
-          subtitle={t('dashboard.annualEstimate')}
-        />
-      </View>
+        {/* Primary stats */}
+        <View style={styles.primaryStats}>
+          <MainStat
+            label={t('dashboard.difference')}
+            value={variance}
+            unit="km"
+            subtitle={t('dashboard.target', { value: targetKm.toFixed(0) })}
+            color={varianceColor}
+            showSign
+          />
+          <View style={styles.divider} />
+          <MainStat
+            label={t('dashboard.projection')}
+            value={projectedTotal}
+            unit="km"
+            color={projectedColor}
+            subtitle={t('dashboard.annualEstimate')}
+          />
+        </View>
 
-      {/* Secondary stats grid */}
-      <View style={styles.grid}>
-        <SecondaryStat
-          value={requiredDailyAvg.toFixed(1)}
-          label={t('dashboard.requiredDaily')}
-        />
-        <SecondaryStat
-          value={dailyAvg.toFixed(1)}
-          label={t('dashboard.averageDaily')}
-          color={dailyAvgColor}
-        />
-        <SecondaryStat
-          value={remainingKm}
-          label={t('dashboard.remainingKm')}
-        />
-        <SecondaryStat
-          value={remainingDays}
-          label={t('dashboard.remainingDays')}
-        />
-      </View>
+        {/* Secondary stats grid */}
+        <View style={styles.grid}>
+          <SecondaryStat
+            value={requiredDailyAvg.toFixed(1)}
+            label={t('dashboard.requiredDaily')}
+          />
+          <SecondaryStat
+            value={dailyAvg.toFixed(1)}
+            label={t('dashboard.averageDaily')}
+            color={dailyAvgColor}
+          />
+          <SecondaryStat
+            value={remainingKm}
+            label={t('dashboard.remainingKm')}
+          />
+          <SecondaryStat
+            value={remainingDays}
+            label={t('dashboard.remainingDays')}
+          />
+        </View>
 
       </ScrollView>
 
@@ -130,9 +130,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
+    flexGrow: 1,
     paddingHorizontal: 16,
     paddingTop: 60,
-    paddingBottom: 120,
   },
   header: {
     fontSize: 14,

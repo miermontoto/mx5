@@ -117,7 +117,7 @@ export const SettingsScreen = () => {
   const currentLanguage = LANGUAGES.find(l => l.code === i18n.language) || LANGUAGES[0];
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       <LinearGradient
         colors={[COLORS.background, COLORS.backgroundSecondary]}
         style={styles.gradient}
@@ -285,6 +285,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   gradient: {
     position: 'absolute',
