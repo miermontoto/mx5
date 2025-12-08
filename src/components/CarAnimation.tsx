@@ -19,7 +19,7 @@ export const CarAnimation: React.FC<CarAnimationProps> = ({
   const [currentFrame, setCurrentFrame] = useState(1);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [loadedImages, setLoadedImages] = useState<{ [key: number]: boolean }>({});
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastX = useRef(0);
 
   // Preload all images

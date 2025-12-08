@@ -1,8 +1,10 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Animated, {
+  cancelAnimation,
   Easing,
   interpolate,
   useAnimatedStyle,
@@ -26,7 +28,7 @@ export const MainCard: React.FC<MainCardProps> = ({ totalKm, percentage }) => {
   const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0);
 
-  // Animation values for decorative elements
+  // valores para las animaciones decorativas
   const floatAnimation1 = useSharedValue(0);
   const floatAnimation2 = useSharedValue(0);
   const floatAnimation3 = useSharedValue(0);
@@ -34,7 +36,6 @@ export const MainCard: React.FC<MainCardProps> = ({ totalKm, percentage }) => {
   const rotateAnimation = useSharedValue(0);
 
   useEffect(() => {
-    // Card entrance animation
     scale.value = withSpring(1, {
       damping: 15,
       stiffness: 150,
@@ -43,46 +44,54 @@ export const MainCard: React.FC<MainCardProps> = ({ totalKm, percentage }) => {
       duration: 150,
       easing: Easing.out(Easing.ease),
     });
-
-    // Floating animations for decorative elements
-    floatAnimation1.value = withRepeat(
-      withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
-      -1,
-      true
-    );
-
-    floatAnimation2.value = withRepeat(
-      withTiming(1, { duration: 1800, easing: Easing.inOut(Easing.ease) }),
-      -1,
-      true
-    );
-
-    floatAnimation3.value = withRepeat(
-      withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
-      -1,
-      true
-    );
-
-    floatAnimation4.value = withRepeat(
-      withTiming(1, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
-      -1,
-      true
-    );
-
-    // Rotation animation
-    rotateAnimation.value = withRepeat(
-      withTiming(360, { duration: 8000, easing: Easing.linear }),
-      -1,
-      false
-    );
   }, []);
+
+  // inicia/detiene las animaciones decorativas según el foco de la pantalla
+  useFocusEffect(
+    useCallback(() => {
+      // inicia animaciones al enfocar
+      floatAnimation1.value = withRepeat(
+        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true
+      );
+      floatAnimation2.value = withRepeat(
+        withTiming(1, { duration: 1800, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true
+      );
+      floatAnimation3.value = withRepeat(
+        withTiming(1, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true
+      );
+      floatAnimation4.value = withRepeat(
+        withTiming(1, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true
+      );
+      rotateAnimation.value = withRepeat(
+        withTiming(360, { duration: 8000, easing: Easing.linear }),
+        -1,
+        false
+      );
+
+      // detiene animaciones al perder el foco
+      return () => {
+        cancelAnimation(floatAnimation1);
+        cancelAnimation(floatAnimation2);
+        cancelAnimation(floatAnimation3);
+        cancelAnimation(floatAnimation4);
+        cancelAnimation(rotateAnimation);
+      };
+    }, [])
+  );
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
   }));
 
-  // Animated styles for decorative elements
   const decorativeStyle1 = useAnimatedStyle(() => ({
     transform: [
       { translateY: interpolate(floatAnimation1.value, [0, 1], [0, -20]) },
@@ -113,7 +122,6 @@ export const MainCard: React.FC<MainCardProps> = ({ totalKm, percentage }) => {
 
   return (
     <Animated.View style={[styles.container, animatedStyle, { shadowColor: settings.accentColor }]}>
-      {/* Background gradient mesh */}
       <LinearGradient
         colors={[COLORS.darkGradientStart, COLORS.darkGradientEnd]}
         start={{ x: 0, y: 0 }}
@@ -121,7 +129,6 @@ export const MainCard: React.FC<MainCardProps> = ({ totalKm, percentage }) => {
         style={styles.backgroundGradient}
       />
 
-      {/* Glass card */}
       <View style={styles.glassCard}>
         <View style={styles.header}>
           <Text style={styles.label}>{t('dashboard.annualMileage')}</Text>
@@ -130,18 +137,17 @@ export const MainCard: React.FC<MainCardProps> = ({ totalKm, percentage }) => {
           </View>
         </View>
 
-        {/* Circular gauge */}
         <View style={styles.gaugeContainer}>
           <AnimatedCircularGauge value={totalKm} maxValue={settings.yearlyLimit} />
         </View>
 
-        {/* Animated decorative elements */}
+        {/* elementos decorativos animados */}
         <Animated.View style={[styles.decorativeCircle1, decorativeStyle1, { backgroundColor: settings.accentColor + '10' }]} />
         <Animated.View style={[styles.decorativeCircle2, decorativeStyle2, { backgroundColor: settings.accentColor + '08' }]} />
         <Animated.View style={[styles.decorativeCircle3, decorativeStyle3, { backgroundColor: settings.accentColor + '05' }]} />
         <Animated.View style={[styles.decorativeCircle4, decorativeStyle4, { backgroundColor: settings.accentColor + '12' }]} />
 
-        {/* Additional smaller decorative specs */}
+        {/* specs decorativos adicionales */}
         <Animated.View style={[styles.decorativeSpec1, decorativeStyle2, { backgroundColor: settings.accentColor + '15' }]} />
         <Animated.View style={[styles.decorativeSpec2, decorativeStyle4, { backgroundColor: settings.accentColor + '10' }]} />
         <Animated.View style={[styles.decorativeSpec3, decorativeStyle1, { backgroundColor: settings.accentColor + '20' }]} />
@@ -202,7 +208,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 20,
   },
-  // Large decorative circles
   decorativeCircle1: {
     position: 'absolute',
     width: 200,
@@ -239,7 +244,6 @@ const styles = StyleSheet.create({
     bottom: 30,
     right: -50,
   },
-  // Smaller decorative specs
   decorativeSpec1: {
     position: 'absolute',
     width: 40,
