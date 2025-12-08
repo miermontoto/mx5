@@ -1,6 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Animated, {
   Easing,
   interpolate,
@@ -20,6 +21,7 @@ interface MainCardProps {
 }
 
 export const MainCard: React.FC<MainCardProps> = ({ totalKm, percentage }) => {
+  const { t } = useTranslation();
   const { settings } = useSettings();
   const scale = useSharedValue(0.8);
   const opacity = useSharedValue(0);
@@ -122,7 +124,7 @@ export const MainCard: React.FC<MainCardProps> = ({ totalKm, percentage }) => {
       {/* Glass card */}
       <View style={styles.glassCard}>
         <View style={styles.header}>
-          <Text style={styles.label}>KILOMETRAJE ANUAL</Text>
+          <Text style={styles.label}>{t('dashboard.annualMileage')}</Text>
           <View style={[styles.yearBadge, { backgroundColor: settings.accentColor + '20', borderColor: settings.accentColor + '30' }]}>
             <Text style={[styles.yearText, { color: settings.accentColor }]}>{new Date().getFullYear()}</Text>
           </View>

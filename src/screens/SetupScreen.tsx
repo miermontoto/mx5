@@ -19,27 +19,30 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { format } from 'date-fns';
+import { enUS, es } from 'date-fns/locale';
 import { COLORS, SHADOWS } from '../constants';
 import { useSettings } from '../contexts/SettingsContext';
 import { saveConfig } from '../utils/storage';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export const SetupScreen = ({ navigation }: any) => {
+  const { t, i18n } = useTranslation();
   const { settings, updateSettings } = useSettings();
   const [startDate, setStartDate] = useState(new Date());
   const [initialKm, setInitialKm] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-  
+
   const buttonScale = useSharedValue(1);
+  const dateLocale = i18n.language === 'es' ? es : enUS;
 
   const handleSave = async () => {
     buttonScale.value = withSpring(0.95);
-    
+
     try {
       // Update settings with the initial configuration
       await updateSettings({
@@ -47,18 +50,18 @@ export const SetupScreen = ({ navigation }: any) => {
         startDate: startDate.toISOString(),
         initialKilometers: initialKm ? Number(initialKm) : 0,
       });
-      
+
       // Also save to config for backward compatibility
       await saveConfig({
         startDate: startDate.toISOString(),
         initialKilometers: initialKm ? Number(initialKm) : undefined,
       });
-      
+
       buttonScale.value = withSpring(1);
       navigation.replace('Main');
     } catch (error) {
       buttonScale.value = withSpring(1);
-      Alert.alert('Error', 'No se pudo guardar la configuración');
+      Alert.alert(t('common.error'), t('setup.saveError'));
     }
   };
 
@@ -73,7 +76,7 @@ export const SetupScreen = ({ navigation }: any) => {
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
@@ -81,13 +84,13 @@ export const SetupScreen = ({ navigation }: any) => {
         colors={[COLORS.background, COLORS.backgroundSecondary]}
         style={styles.gradient}
       />
-      
-      <ScrollView 
-        style={styles.scrollView} 
+
+      <ScrollView
+        style={styles.scrollView}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <Animated.View 
+        <Animated.View
           entering={FadeIn.duration(800)}
           style={styles.header}
         >
@@ -99,19 +102,19 @@ export const SetupScreen = ({ navigation }: any) => {
               <Ionicons name="car-sport" size={40} color={COLORS.text} />
             </LinearGradient>
           </View>
-          
-          <Text style={styles.title}>Bienvenido</Text>
+
+          <Text style={styles.title}>{t('setup.welcome')}</Text>
           <Text style={styles.subtitle}>
-            Configura el inicio de tu período anual de {settings.yearlyLimit.toLocaleString('es')} km
+            {t('setup.subtitle', { value: settings.yearlyLimit.toLocaleString(i18n.language) })}
           </Text>
         </Animated.View>
 
-        <Animated.View 
+        <Animated.View
           entering={FadeInDown.delay(200).springify()}
           style={styles.form}
         >
           <View style={styles.section}>
-            <Text style={styles.label}>FECHA DE INICIO</Text>
+            <Text style={styles.label}>{t('setup.startDateLabel')}</Text>
             <TouchableOpacity
               style={[
                 styles.inputContainer,
@@ -122,16 +125,16 @@ export const SetupScreen = ({ navigation }: any) => {
             >
               <Ionicons name="calendar-outline" size={20} color={COLORS.textSecondary} />
               <Text style={styles.dateText}>
-                {format(startDate, "d 'de' MMMM 'de' yyyy", { locale: es })}
+                {format(startDate, i18n.language === 'es' ? "d 'de' MMMM 'de' yyyy" : "MMMM d, yyyy", { locale: dateLocale })}
               </Text>
             </TouchableOpacity>
             <Text style={styles.helper}>
-              Desde esta fecha se contarán los {settings.yearlyLimit.toLocaleString('es')} km anuales
+              {t('setup.startDateHelper', { value: settings.yearlyLimit.toLocaleString(i18n.language) })}
             </Text>
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.label}>KILOMETRAJE INICIAL (OPCIONAL)</Text>
+            <Text style={styles.label}>{t('setup.initialKmLabel')}</Text>
             <View style={[
               styles.inputContainer,
               focusedInput === 'km' && [styles.inputContainerFocused, { borderColor: settings.accentColor }]
@@ -148,15 +151,15 @@ export const SetupScreen = ({ navigation }: any) => {
                 placeholderTextColor={COLORS.textTertiary}
                 selectionColor={settings.accentColor}
               />
-              <Text style={styles.inputUnit}>KM</Text>
+              <Text style={styles.inputUnit}>{t('common.kmUnit')}</Text>
             </View>
             <Text style={styles.helper}>
-              Lectura actual del odómetro (opcional)
+              {t('setup.initialKmHelper')}
             </Text>
           </View>
         </Animated.View>
 
-        <Animated.View 
+        <Animated.View
           entering={FadeInDown.delay(400).springify()}
           style={styles.buttonContainer}
         >
@@ -171,7 +174,7 @@ export const SetupScreen = ({ navigation }: any) => {
               end={{ x: 1, y: 1 }}
               style={styles.buttonGradient}
             >
-              <Text style={styles.saveButtonText}>COMENZAR</Text>
+              <Text style={styles.saveButtonText}>{t('common.start').toUpperCase()}</Text>
               <Ionicons name="arrow-forward" size={20} color={COLORS.text} style={styles.buttonIcon} />
             </LinearGradient>
           </AnimatedTouchableOpacity>

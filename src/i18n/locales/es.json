@@ -1,0 +1,110 @@
+{
+  "tabs": {
+    "dashboard": "Inicio",
+    "history": "Historial",
+    "settings": "Ajustes"
+  },
+  "common": {
+    "km": "km",
+    "kmUnit": "KM",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "error": "Error",
+    "saving": "Guardando...",
+    "loading": "Cargando...",
+    "continue": "Continuar",
+    "reset": "Restablecer",
+    "start": "Comenzar",
+    "custom": "Personalizado"
+  },
+  "dashboard": {
+    "header": "MX-5 TRACKER",
+    "annualMileage": "KILOMETRAJE ANUAL",
+    "ofAnnualLimit": "del límite anual",
+    "difference": "DIFERENCIA",
+    "projection": "PROYECCIÓN",
+    "target": "objetivo: {{value}} km",
+    "annualEstimate": "estimado anual",
+    "requiredDaily": "km/día necesarios",
+    "averageDaily": "km/día promedio",
+    "remainingKm": "km restantes",
+    "remainingDays": "días restantes"
+  },
+  "history": {
+    "title": "Historial",
+    "chartTitle": "Evolución del kilometraje",
+    "actual": "Actual",
+    "target": "Objetivo",
+    "noRecords": "Sin registros aún",
+    "noRecordsHint": "Toca el botón + para agregar tu primer registro",
+    "deleteTitle": "Eliminar registro",
+    "deleteMessage": "¿Estás seguro de que quieres eliminar este registro?"
+  },
+  "addEntry": {
+    "title": "Nuevo Registro",
+    "currentOdometer": "ODÓMETRO ACTUAL",
+    "notesOptional": "NOTAS (OPCIONAL)",
+    "notesPlaceholder": "Detalles del viaje, mantenimiento, etc...",
+    "saveButton": "GUARDAR REGISTRO",
+    "savingButton": "GUARDANDO...",
+    "lastReading": "Último registro: {{value}} km",
+    "invalidInput": "Entrada inválida",
+    "invalidInputMessage": "Por favor ingresa una distancia total válida",
+    "confirmLowerReading": "Confirmar lectura menor",
+    "lowerReadingMessage": "La nueva lectura ({{new}} km) es menor que la última ({{last}} km). ¿Continuar?",
+    "saveError": "No se pudo guardar. Por favor intenta de nuevo."
+  },
+  "editEntry": {
+    "title": "Editar registro",
+    "date": "Fecha",
+    "kilometers": "Kilómetros",
+    "kilometersPlaceholder": "Ej: 45000",
+    "noteOptional": "Nota (opcional)",
+    "notePlaceholder": "Ej: Viaje a la costa",
+    "updateError": "No se pudo actualizar el registro",
+    "deleteError": "No se pudo eliminar el registro"
+  },
+  "settings": {
+    "title": "Configuración",
+    "limits": "LÍMITES",
+    "yearlyLimit": "Límite anual de kilómetros",
+    "startDate": "Fecha de inicio del período anual",
+    "startDateHelper": "Esta fecha marca el inicio de tu período anual de {{value}} km",
+    "accentColor": "COLOR DE ACENTO",
+    "selectColor": "Seleccionar color",
+    "resetDefaults": "Restablecer valores predeterminados",
+    "resetTitle": "Restablecer configuración",
+    "resetMessage": "¿Estás seguro de que quieres restablecer toda la configuración a los valores predeterminados?",
+    "invalidLimit": "Por favor ingresa un límite anual válido",
+    "language": "IDIOMA",
+    "selectLanguage": "Seleccionar idioma"
+  },
+  "setup": {
+    "welcome": "Bienvenido",
+    "subtitle": "Configura el inicio de tu período anual de {{value}} km",
+    "startDateLabel": "FECHA DE INICIO",
+    "startDateHelper": "Desde esta fecha se contarán los {{value}} km anuales",
+    "initialKmLabel": "KILOMETRAJE INICIAL (OPCIONAL)",
+    "initialKmHelper": "Lectura actual del odómetro (opcional)",
+    "saveError": "No se pudo guardar la configuración"
+  },
+  "colors": {
+    "soulRed": "Soul Red",
+    "racingBlue": "Racing Blue",
+    "britishGreen": "British Green",
+    "orangeFury": "Orange Fury",
+    "purpleDream": "Purple Dream",
+    "goldenHour": "Golden Hour",
+    "arcticSilver": "Arctic Silver",
+    "midnightBlue": "Midnight Blue",
+    "pinkBlossom": "Pink Blossom",
+    "electricTeal": "Electric Teal",
+    "sunsetOrange": "Sunset Orange"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English"
+  }
+}

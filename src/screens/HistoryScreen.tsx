@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { enUS, es } from 'date-fns/locale';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert, Dimensions, FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Swipeable } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
 import Animated, {
   FadeIn,
   FadeInDown,
@@ -24,6 +25,7 @@ import { MileageEntry } from '../types';
 import { deleteEntry, loadData } from '../utils/storage';
 
 export const HistoryScreen = () => {
+  const { t, i18n } = useTranslation();
   const navigation = useNavigation<any>();
   const { settings } = useSettings();
   const [entries, setEntries] = useState<MileageEntry[]>([]);
@@ -33,6 +35,8 @@ export const HistoryScreen = () => {
   const headerOpacity = useSharedValue(1);
   const screenWidth = Dimensions.get('window').width;
   const swipeableRefs = React.useRef<{ [key: string]: Swipeable | null }>({});
+
+  const dateLocale = i18n.language === 'es' ? es : enUS;
 
   const fetchData = async () => {
     const data = await loadData();
@@ -57,12 +61,12 @@ export const HistoryScreen = () => {
 
   const handleDelete = async (item: MileageEntry) => {
     Alert.alert(
-      'Eliminar registro',
-      '¿Estás seguro de que quieres eliminar este registro?',
+      t('history.deleteTitle'),
+      t('history.deleteMessage'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Eliminar',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             await deleteEntry(item.id);
@@ -89,7 +93,7 @@ export const HistoryScreen = () => {
           }}
         >
           <Ionicons name="pencil" size={20} color="white" />
-          <Text style={styles.swipeActionText}>Editar</Text>
+          <Text style={styles.swipeActionText}>{t('common.edit')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.swipeAction, styles.deleteAction]}
@@ -99,7 +103,7 @@ export const HistoryScreen = () => {
           }}
         >
           <Ionicons name="trash" size={20} color="white" />
-          <Text style={styles.swipeActionText}>Eliminar</Text>
+          <Text style={styles.swipeActionText}>{t('common.delete')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -134,7 +138,7 @@ export const HistoryScreen = () => {
                   {format(new Date(item.date), 'd')}
                 </Text>
                 <Text style={styles.monthText}>
-                  {format(new Date(item.date), 'MMM', { locale: es }).toUpperCase()}
+                  {format(new Date(item.date), 'MMM', { locale: dateLocale }).toUpperCase()}
                 </Text>
               </View>
 
@@ -142,7 +146,7 @@ export const HistoryScreen = () => {
               <View style={styles.entryContent}>
                 <View style={styles.entryHeader}>
                   <Text style={styles.entryDate}>
-                    {format(new Date(item.date), "EEEE, d 'de' MMMM", { locale: es })}
+                    {format(new Date(item.date), i18n.language === 'es' ? "EEEE, d 'de' MMMM" : "EEEE, MMMM d", { locale: dateLocale })}
                   </Text>
                   <Text style={styles.entryTime}>
                     {format(new Date(item.date), 'HH:mm')}
@@ -151,13 +155,13 @@ export const HistoryScreen = () => {
 
                 <View style={styles.kmRow}>
                   <Text style={styles.entryKm}>
-                    {item.totalKilometers.toLocaleString('es')}
+                    {item.totalKilometers.toLocaleString(i18n.language)}
                     <Text style={styles.kmUnit}> km</Text>
                   </Text>
                   {prevEntry && kmDifference > 0 && (
                     <View style={[styles.kmDifferenceContainer, { backgroundColor: settings.accentColor + '20' }]}>
                       <Text style={[styles.kmDifference, { color: settings.accentColor }]}>
-                        +{kmDifference.toLocaleString('es')}
+                        +{kmDifference.toLocaleString(i18n.language)}
                       </Text>
                     </View>
                   )}
@@ -187,9 +191,9 @@ export const HistoryScreen = () => {
       <View style={[styles.emptyIcon, { backgroundColor: settings.accentColor + '10' }]}>
         <Ionicons name="bar-chart-outline" size={40} color={settings.accentColor} />
       </View>
-      <Text style={styles.emptyText}>Sin registros aún</Text>
+      <Text style={styles.emptyText}>{t('history.noRecords')}</Text>
       <Text style={styles.emptySubtext}>
-        Toca el botón + para agregar tu primer registro
+        {t('history.noRecordsHint')}
       </Text>
     </Animated.View>
   );
@@ -265,9 +269,9 @@ export const HistoryScreen = () => {
           withDots: false,
         },
       ],
-      legend: ['Actual', 'Objetivo'],
+      legend: [t('history.actual'), t('history.target')],
     };
-  }, [entries, settings]);
+  }, [entries, settings, t]);
 
   return (
     <View style={styles.container}>
@@ -280,7 +284,7 @@ export const HistoryScreen = () => {
       {/* Header */}
       <Animated.View style={[styles.header, headerAnimatedStyle]}>
         <Animated.View entering={FadeInDown.duration(600).springify()}>
-          <Text style={styles.title}>Historial</Text>
+          <Text style={styles.title}>{t('history.title')}</Text>
           <View style={styles.yearBadge}>
             <Text style={[styles.yearText, { color: settings.accentColor }]}>
               {new Date().getFullYear()}
@@ -302,15 +306,15 @@ export const HistoryScreen = () => {
               style={styles.chartContainer}
             >
               <View style={styles.chartHeader}>
-                <Text style={styles.chartTitle}>Evolución del kilometraje</Text>
+                <Text style={styles.chartTitle}>{t('history.chartTitle')}</Text>
                 <View style={styles.legendContainer}>
                   <View style={styles.legendItem}>
                     <View style={[styles.legendDot, { backgroundColor: settings.accentColor }]} />
-                    <Text style={styles.legendText}>Actual</Text>
+                    <Text style={styles.legendText}>{t('history.actual')}</Text>
                   </View>
                   <View style={styles.legendItem}>
                     <View style={[styles.legendDot, { backgroundColor: 'rgba(255, 255, 255, 0.3)' }]} />
-                    <Text style={styles.legendText}>Objetivo</Text>
+                    <Text style={styles.legendText}>{t('history.target')}</Text>
                   </View>
                 </View>
               </View>

@@ -14,29 +14,31 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withTiming,
   withSpring,
   FadeIn,
   SlideInDown,
 } from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
+import { format } from 'date-fns';
+import { enUS, es } from 'date-fns/locale';
 import { COLORS, SHADOWS } from '../constants';
 import { addEntry, getLatestReading } from '../utils/storage';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
 import { useSettings } from '../contexts/SettingsContext';
 import { Ionicons } from '@expo/vector-icons';
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export const AddEntryScreen = ({ navigation }: any) => {
+  const { t, i18n } = useTranslation();
   const { settings } = useSettings();
   const [totalKilometers, setTotalKilometers] = useState('');
   const [note, setNote] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [lastReading, setLastReading] = useState<number>(0);
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-  
+
   const buttonScale = useSharedValue(1);
+  const dateLocale = i18n.language === 'es' ? es : enUS;
 
   useEffect(() => {
     loadLastReading();
@@ -50,17 +52,20 @@ export const AddEntryScreen = ({ navigation }: any) => {
 
   const handleSave = async () => {
     if (!totalKilometers || isNaN(Number(totalKilometers)) || Number(totalKilometers) < 0) {
-      Alert.alert('Entrada inválida', 'Por favor ingresa una distancia total válida');
+      Alert.alert(t('addEntry.invalidInput'), t('addEntry.invalidInputMessage'));
       return;
     }
 
     if (Number(totalKilometers) < lastReading) {
       Alert.alert(
-        'Confirmar lectura menor',
-        `La nueva lectura (${Number(totalKilometers).toLocaleString('es')} km) es menor que la última (${lastReading.toLocaleString('es')} km). ¿Continuar?`,
+        t('addEntry.confirmLowerReading'),
+        t('addEntry.lowerReadingMessage', {
+          new: Number(totalKilometers).toLocaleString(i18n.language),
+          last: lastReading.toLocaleString(i18n.language)
+        }),
         [
-          { text: 'Cancelar', style: 'cancel' },
-          { text: 'Continuar', onPress: () => saveEntry() }
+          { text: t('common.cancel'), style: 'cancel' },
+          { text: t('common.continue'), onPress: () => saveEntry() }
         ]
       );
       return;
@@ -72,7 +77,7 @@ export const AddEntryScreen = ({ navigation }: any) => {
   const saveEntry = async () => {
     setIsLoading(true);
     buttonScale.value = withSpring(0.95);
-    
+
     try {
       await addEntry({
         id: Date.now().toString(),
@@ -82,13 +87,13 @@ export const AddEntryScreen = ({ navigation }: any) => {
       });
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Error', 'No se pudo guardar. Por favor intenta de nuevo.');
+      Alert.alert(t('common.error'), t('addEntry.saveError'));
     } finally {
       setIsLoading(false);
       buttonScale.value = withSpring(1);
     }
   };
-  
+
   const buttonAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: buttonScale.value }],
   }));
@@ -102,13 +107,13 @@ export const AddEntryScreen = ({ navigation }: any) => {
         colors={[COLORS.background, COLORS.backgroundSecondary]}
         style={styles.gradient}
       />
-      
+
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Animated.View 
+        <Animated.View
           entering={FadeIn.duration(600)}
           style={styles.header}
         >
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.closeButton}
             onPress={() => navigation.goBack()}
             activeOpacity={0.7}
@@ -116,21 +121,21 @@ export const AddEntryScreen = ({ navigation }: any) => {
           >
             <Ionicons name="close" size={24} color={COLORS.text} />
           </TouchableOpacity>
-          
-          <Text style={styles.title}>Nuevo Registro</Text>
+
+          <Text style={styles.title}>{t('addEntry.title')}</Text>
           <View style={styles.dateBadge}>
             <Text style={styles.date}>
-              {format(new Date(), "d 'de' MMMM 'de' yyyy", { locale: es })}
+              {format(new Date(), i18n.language === 'es' ? "d 'de' MMMM 'de' yyyy" : "MMMM d, yyyy", { locale: dateLocale })}
             </Text>
           </View>
         </Animated.View>
 
-        <Animated.View 
+        <Animated.View
           entering={SlideInDown.delay(200).springify()}
           style={styles.form}
         >
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>ODÓMETRO ACTUAL</Text>
+            <Text style={styles.label}>{t('addEntry.currentOdometer')}</Text>
             <View style={[
               styles.inputContainer,
               focusedInput === 'km' && [styles.inputContainerFocused, { borderColor: settings.accentColor }]
@@ -146,20 +151,20 @@ export const AddEntryScreen = ({ navigation }: any) => {
                 onBlur={() => setFocusedInput(null)}
                 autoFocus
               />
-              <Text style={styles.inputUnit}>KM</Text>
+              <Text style={styles.inputUnit}>{t('common.kmUnit')}</Text>
             </View>
             {lastReading > 0 && (
               <View style={styles.helperContainer}>
                 <View style={[styles.helperDot, { backgroundColor: settings.accentColor }]} />
                 <Text style={styles.helper}>
-                  Último registro: {lastReading.toLocaleString('es')} km
+                  {t('addEntry.lastReading', { value: lastReading.toLocaleString(i18n.language) })}
                 </Text>
               </View>
             )}
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>NOTAS (OPCIONAL)</Text>
+            <Text style={styles.label}>{t('addEntry.notesOptional')}</Text>
             <View style={[
               styles.inputContainer,
               styles.textAreaContainer,
@@ -169,7 +174,7 @@ export const AddEntryScreen = ({ navigation }: any) => {
                 style={[styles.input, styles.textArea]}
                 value={note}
                 onChangeText={setNote}
-                placeholder="Detalles del viaje, mantenimiento, etc..."
+                placeholder={t('addEntry.notesPlaceholder')}
                 placeholderTextColor={COLORS.textTertiary}
                 onFocus={() => setFocusedInput('note')}
                 onBlur={() => setFocusedInput(null)}
@@ -180,7 +185,7 @@ export const AddEntryScreen = ({ navigation }: any) => {
           </View>
         </Animated.View>
 
-        <Animated.View 
+        <Animated.View
           entering={SlideInDown.delay(400).springify()}
           style={styles.buttonContainer}
         >
@@ -197,7 +202,7 @@ export const AddEntryScreen = ({ navigation }: any) => {
               style={styles.buttonGradient}
             >
               <Text style={styles.saveButtonText}>
-                {isLoading ? 'GUARDANDO...' : 'GUARDAR REGISTRO'}
+                {isLoading ? t('addEntry.savingButton') : t('addEntry.saveButton')}
               </Text>
             </LinearGradient>
           </AnimatedTouchableOpacity>

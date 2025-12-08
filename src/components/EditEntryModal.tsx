@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { enUS, es } from 'date-fns/locale';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import {
@@ -16,6 +16,7 @@ import {
   View
 } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
 import { COLORS, SHADOWS } from '../constants';
 import { useSettings } from '../contexts/SettingsContext';
 import { MileageEntry } from '../types';
@@ -34,6 +35,7 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
   onClose,
   onSave,
 }) => {
+  const { t, i18n } = useTranslation();
   const { settings } = useSettings();
   const [kilometers, setKilometers] = useState('');
   const [note, setNote] = useState('');
@@ -42,6 +44,8 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
   const [saving, setSaving] = useState(false);
   const [kmInputFocused, setKmInputFocused] = useState(false);
   const [noteInputFocused, setNoteInputFocused] = useState(false);
+
+  const dateLocale = i18n.language === 'es' ? es : enUS;
 
   React.useEffect(() => {
     if (entry) {
@@ -64,7 +68,7 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
       onSave();
       onClose();
     } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar el registro');
+      Alert.alert(t('common.error'), t('editEntry.updateError'));
     } finally {
       setSaving(false);
     }
@@ -74,12 +78,12 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
     if (!entry) return;
 
     Alert.alert(
-      'Eliminar registro',
-      '¿Estás seguro de que quieres eliminar este registro?',
+      t('history.deleteTitle'),
+      t('history.deleteMessage'),
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Eliminar',
+          text: t('common.delete'),
           style: 'destructive',
           onPress: async () => {
             setSaving(true);
@@ -88,7 +92,7 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
               onSave();
               onClose();
             } catch (error) {
-              Alert.alert('Error', 'No se pudo eliminar el registro');
+              Alert.alert(t('common.error'), t('editEntry.deleteError'));
             } finally {
               setSaving(false);
             }
@@ -116,7 +120,7 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
           activeOpacity={1}
           onPress={onClose}
         />
-        
+
         <Animated.View entering={FadeIn.springify()} style={styles.content}>
           <LinearGradient
             colors={[COLORS.surface, COLORS.surfaceLight]}
@@ -124,7 +128,7 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
           >
             {/* Header */}
             <View style={styles.header}>
-              <Text style={styles.title}>Editar registro</Text>
+              <Text style={styles.title}>{t('editEntry.title')}</Text>
               <TouchableOpacity
                 onPress={onClose}
                 style={styles.closeButton}
@@ -139,10 +143,10 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
               style={styles.dateSelector}
               onPress={() => setShowDatePicker(true)}
             >
-              <Text style={styles.dateLabel}>Fecha</Text>
+              <Text style={styles.dateLabel}>{t('editEntry.date')}</Text>
               <View style={styles.dateValue}>
                 <Text style={styles.dateText}>
-                  {format(date, "d 'de' MMMM, yyyy", { locale: es })}
+                  {format(date, i18n.language === 'es' ? "d 'de' MMMM, yyyy" : "MMMM d, yyyy", { locale: dateLocale })}
                 </Text>
                 <Ionicons name="calendar-outline" size={20} color={settings.accentColor} />
               </View>
@@ -150,16 +154,16 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
 
             {/* Kilometers input */}
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Kilómetros</Text>
+              <Text style={styles.inputLabel}>{t('editEntry.kilometers')}</Text>
               <TextInput
                 style={[
-                  styles.input, 
+                  styles.input,
                   { borderColor: kmInputFocused ? settings.accentColor : settings.accentColor + '30' }
                 ]}
                 value={kilometers}
                 onChangeText={setKilometers}
                 keyboardType="numeric"
-                placeholder="Ej: 45000"
+                placeholder={t('editEntry.kilometersPlaceholder')}
                 placeholderTextColor={COLORS.textTertiary}
                 onFocus={() => setKmInputFocused(true)}
                 onBlur={() => setKmInputFocused(false)}
@@ -168,7 +172,7 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
 
             {/* Note input */}
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Nota (opcional)</Text>
+              <Text style={styles.inputLabel}>{t('editEntry.noteOptional')}</Text>
               <TextInput
                 style={[
                   styles.input,
@@ -177,7 +181,7 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
                 ]}
                 value={note}
                 onChangeText={setNote}
-                placeholder="Ej: Viaje a la costa"
+                placeholder={t('editEntry.notePlaceholder')}
                 placeholderTextColor={COLORS.textTertiary}
                 multiline
                 numberOfLines={3}
@@ -194,7 +198,7 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
                 disabled={saving}
               >
                 <Ionicons name="trash-outline" size={20} color={COLORS.error} />
-                <Text style={styles.deleteButtonText}>Eliminar</Text>
+                <Text style={styles.deleteButtonText}>{t('common.delete')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -207,7 +211,7 @@ export const EditEntryModal: React.FC<EditEntryModalProps> = ({
                 disabled={!kilometers || saving}
               >
                 <Text style={styles.saveButtonText}>
-                  {saving ? 'Guardando...' : 'Guardar'}
+                  {saving ? t('common.saving') : t('common.save')}
                 </Text>
               </TouchableOpacity>
             </View>

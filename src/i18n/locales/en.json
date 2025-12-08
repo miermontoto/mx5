@@ -1,0 +1,110 @@
+{
+  "tabs": {
+    "dashboard": "Home",
+    "history": "History",
+    "settings": "Settings"
+  },
+  "common": {
+    "km": "km",
+    "kmUnit": "KM",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "error": "Error",
+    "saving": "Saving...",
+    "loading": "Loading...",
+    "continue": "Continue",
+    "reset": "Reset",
+    "start": "Start",
+    "custom": "Custom"
+  },
+  "dashboard": {
+    "header": "MX-5 TRACKER",
+    "annualMileage": "ANNUAL MILEAGE",
+    "ofAnnualLimit": "of annual limit",
+    "difference": "DIFFERENCE",
+    "projection": "PROJECTION",
+    "target": "target: {{value}} km",
+    "annualEstimate": "annual estimate",
+    "requiredDaily": "km/day required",
+    "averageDaily": "km/day average",
+    "remainingKm": "km remaining",
+    "remainingDays": "days remaining"
+  },
+  "history": {
+    "title": "History",
+    "chartTitle": "Mileage evolution",
+    "actual": "Actual",
+    "target": "Target",
+    "noRecords": "No records yet",
+    "noRecordsHint": "Tap the + button to add your first record",
+    "deleteTitle": "Delete record",
+    "deleteMessage": "Are you sure you want to delete this record?"
+  },
+  "addEntry": {
+    "title": "New Record",
+    "currentOdometer": "CURRENT ODOMETER",
+    "notesOptional": "NOTES (OPTIONAL)",
+    "notesPlaceholder": "Trip details, maintenance, etc...",
+    "saveButton": "SAVE RECORD",
+    "savingButton": "SAVING...",
+    "lastReading": "Last reading: {{value}} km",
+    "invalidInput": "Invalid input",
+    "invalidInputMessage": "Please enter a valid total distance",
+    "confirmLowerReading": "Confirm lower reading",
+    "lowerReadingMessage": "The new reading ({{new}} km) is lower than the last one ({{last}} km). Continue?",
+    "saveError": "Could not save. Please try again."
+  },
+  "editEntry": {
+    "title": "Edit record",
+    "date": "Date",
+    "kilometers": "Kilometers",
+    "kilometersPlaceholder": "Ex: 45000",
+    "noteOptional": "Note (optional)",
+    "notePlaceholder": "Ex: Trip to the coast",
+    "updateError": "Could not update the record",
+    "deleteError": "Could not delete the record"
+  },
+  "settings": {
+    "title": "Settings",
+    "limits": "LIMITS",
+    "yearlyLimit": "Annual kilometer limit",
+    "startDate": "Annual period start date",
+    "startDateHelper": "This date marks the start of your {{value}} km annual period",
+    "accentColor": "ACCENT COLOR",
+    "selectColor": "Select color",
+    "resetDefaults": "Reset to default values",
+    "resetTitle": "Reset settings",
+    "resetMessage": "Are you sure you want to reset all settings to default values?",
+    "invalidLimit": "Please enter a valid annual limit",
+    "language": "LANGUAGE",
+    "selectLanguage": "Select language"
+  },
+  "setup": {
+    "welcome": "Welcome",
+    "subtitle": "Set up the start of your {{value}} km annual period",
+    "startDateLabel": "START DATE",
+    "startDateHelper": "From this date, the {{value}} annual km will be counted",
+    "initialKmLabel": "INITIAL MILEAGE (OPTIONAL)",
+    "initialKmHelper": "Current odometer reading (optional)",
+    "saveError": "Could not save configuration"
+  },
+  "colors": {
+    "soulRed": "Soul Red",
+    "racingBlue": "Racing Blue",
+    "britishGreen": "British Green",
+    "orangeFury": "Orange Fury",
+    "purpleDream": "Purple Dream",
+    "goldenHour": "Golden Hour",
+    "arcticSilver": "Arctic Silver",
+    "midnightBlue": "Midnight Blue",
+    "pinkBlossom": "Pink Blossom",
+    "electricTeal": "Electric Teal",
+    "sunsetOrange": "Sunset Orange"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English"
+  }
+}

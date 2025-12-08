@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { COLORS, SHADOWS } from '../constants';
 
 interface ColorPickerProps {
@@ -10,20 +11,21 @@ interface ColorPickerProps {
 }
 
 const PRESET_COLORS = [
-  { name: 'Soul Red', color: '#CC0000', gradient: ['#CC0000', '#FF0000'] as [string, string] },
-  { name: 'Racing Blue', color: '#0080FF', gradient: ['#0080FF', '#00A8FF'] as [string, string] },
-  { name: 'British Green', color: '#004225', gradient: ['#004225', '#006B3C'] as [string, string] },
-  { name: 'Orange Fury', color: '#FF6600', gradient: ['#FF6600', '#FF8533'] as [string, string] },
-  { name: 'Purple Dream', color: '#9B59B6', gradient: ['#9B59B6', '#B47BCF'] as [string, string] },
-  { name: 'Golden Hour', color: '#F39C12', gradient: ['#F39C12', '#FFB84D'] as [string, string] },
-  { name: 'Arctic Silver', color: '#95A5A6', gradient: ['#95A5A6', '#BDC3C7'] as [string, string] },
-  { name: 'Midnight Blue', color: '#2C3E50', gradient: ['#2C3E50', '#34495E'] as [string, string] },
-  { name: 'Pink Blossom', color: '#FF69B4', gradient: ['#FF69B4', '#FF91C9'] as [string, string] },
-  { name: 'Electric Teal', color: '#00CED1', gradient: ['#00CED1', '#00E5E8'] as [string, string] },
-  { name: 'Sunset Orange', color: '#FF4500', gradient: ['#FF4500', '#FF6347'] as [string, string] },
+  { nameKey: 'colors.soulRed', color: '#CC0000', gradient: ['#CC0000', '#FF0000'] as [string, string] },
+  { nameKey: 'colors.racingBlue', color: '#0080FF', gradient: ['#0080FF', '#00A8FF'] as [string, string] },
+  { nameKey: 'colors.britishGreen', color: '#004225', gradient: ['#004225', '#006B3C'] as [string, string] },
+  { nameKey: 'colors.orangeFury', color: '#FF6600', gradient: ['#FF6600', '#FF8533'] as [string, string] },
+  { nameKey: 'colors.purpleDream', color: '#9B59B6', gradient: ['#9B59B6', '#B47BCF'] as [string, string] },
+  { nameKey: 'colors.goldenHour', color: '#F39C12', gradient: ['#F39C12', '#FFB84D'] as [string, string] },
+  { nameKey: 'colors.arcticSilver', color: '#95A5A6', gradient: ['#95A5A6', '#BDC3C7'] as [string, string] },
+  { nameKey: 'colors.midnightBlue', color: '#2C3E50', gradient: ['#2C3E50', '#34495E'] as [string, string] },
+  { nameKey: 'colors.pinkBlossom', color: '#FF69B4', gradient: ['#FF69B4', '#FF91C9'] as [string, string] },
+  { nameKey: 'colors.electricTeal', color: '#00CED1', gradient: ['#00CED1', '#00E5E8'] as [string, string] },
+  { nameKey: 'colors.sunsetOrange', color: '#FF4500', gradient: ['#FF4500', '#FF6347'] as [string, string] },
 ];
 
 export const ColorPicker: React.FC<ColorPickerProps> = ({ selectedColor, onColorSelect }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const selectedPreset = PRESET_COLORS.find(c => c.color === selectedColor);
 
@@ -34,7 +36,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ selectedColor, onColor
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>COLOR DE ACENTO</Text>
+      <Text style={styles.label}>{t('settings.accentColor')}</Text>
 
       <TouchableOpacity
         style={styles.dropdown}
@@ -44,7 +46,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ selectedColor, onColor
         <View style={styles.selectedOption}>
           <View style={[styles.colorDot, { backgroundColor: selectedColor }]} />
           <Text style={styles.selectedText}>
-            {selectedPreset?.name || 'Custom'}
+            {selectedPreset ? t(selectedPreset.nameKey) : t('common.custom')}
           </Text>
         </View>
         <Ionicons name="chevron-down" size={20} color={COLORS.textSecondary} />
@@ -59,7 +61,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ selectedColor, onColor
         <Pressable style={styles.overlay} onPress={() => setIsOpen(false)}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Seleccionar color</Text>
+              <Text style={styles.modalTitle}>{t('settings.selectColor')}</Text>
               <TouchableOpacity onPress={() => setIsOpen(false)}>
                 <Ionicons name="close" size={24} color={COLORS.textSecondary} />
               </TouchableOpacity>
@@ -82,7 +84,7 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ selectedColor, onColor
                       style={styles.optionColorDot}
                     />
                     <Text style={[styles.optionText, isSelected && styles.optionTextSelected]}>
-                      {preset.name}
+                      {t(preset.nameKey)}
                     </Text>
                     {isSelected && (
                       <Ionicons name="checkmark" size={20} color={COLORS.text} />

@@ -2,6 +2,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { differenceInDays } from 'date-fns';
 import React, { useCallback, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { FloatingActionButton } from '../components/FloatingActionButton';
 import { MainCard } from '../components/MainCard';
 import { MainStat } from '../components/MainStat';
@@ -24,6 +25,7 @@ import { getColorForDailyAverage, getColorForValue } from '../utils/colors';
 import { loadData } from '../utils/storage';
 
 export const DashboardScreen = () => {
+  const { t } = useTranslation();
   const navigation = useNavigation<any>();
   const { settings } = useSettings();
   const [yearData, setYearData] = useState<YearlyData | null>(null);
@@ -67,27 +69,27 @@ export const DashboardScreen = () => {
         contentContainerStyle={styles.contentContainer}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.text} />}
       >
-        <Text style={styles.header}>MX-5 TRACKER</Text>
+        <Text style={styles.header}>{t('dashboard.header')}</Text>
 
       <MainCard totalKm={totalKm} percentage={percentage} />
 
       {/* Primary stats */}
       <View style={styles.primaryStats}>
         <MainStat
-          label="DIFERENCIA"
+          label={t('dashboard.difference')}
           value={variance}
           unit="km"
-          subtitle={`objetivo: ${targetKm.toFixed(0)} km`}
+          subtitle={t('dashboard.target', { value: targetKm.toFixed(0) })}
           color={varianceColor}
           showSign
         />
         <View style={styles.divider} />
         <MainStat
-          label="PROYECCIÓN"
+          label={t('dashboard.projection')}
           value={projectedTotal}
           unit="km"
           color={projectedColor}
-          subtitle="estimado anual"
+          subtitle={t('dashboard.annualEstimate')}
         />
       </View>
 
@@ -95,20 +97,20 @@ export const DashboardScreen = () => {
       <View style={styles.grid}>
         <SecondaryStat
           value={requiredDailyAvg.toFixed(1)}
-          label="km/día necesarios"
+          label={t('dashboard.requiredDaily')}
         />
         <SecondaryStat
           value={dailyAvg.toFixed(1)}
-          label="km/día promedio"
+          label={t('dashboard.averageDaily')}
           color={dailyAvgColor}
         />
         <SecondaryStat
           value={remainingKm}
-          label="km restantes"
+          label={t('dashboard.remainingKm')}
         />
         <SecondaryStat
           value={remainingDays}
-          label="días restantes"
+          label={t('dashboard.remainingDays')}
         />
       </View>
 

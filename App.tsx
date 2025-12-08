@@ -6,8 +6,10 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
 import { COLORS } from './src/constants';
 import { SettingsProvider } from './src/contexts/SettingsContext';
+import './src/i18n';
 import { AddEntryScreen } from './src/screens/AddEntryScreen';
 import { DashboardScreen } from './src/screens/DashboardScreen';
 import { HistoryScreen } from './src/screens/HistoryScreen';
@@ -20,6 +22,7 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function TabNavigator() {
+  const { t } = useTranslation();
   return (
     <Tab.Navigator
       screenOptions={{
@@ -40,7 +43,7 @@ function TabNavigator() {
         name="Dashboard"
         component={DashboardScreen}
         options={{
-          tabBarLabel: 'Inicio',
+          tabBarLabel: t('tabs.dashboard'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="speedometer" size={size} color={color} />
           ),
@@ -50,7 +53,7 @@ function TabNavigator() {
         name="History"
         component={HistoryScreen}
         options={{
-          tabBarLabel: 'Historial',
+          tabBarLabel: t('tabs.history'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="time-outline" size={size} color={color} />
           ),
@@ -60,7 +63,7 @@ function TabNavigator() {
         name="Settings"
         component={SettingsScreen}
         options={{
-          tabBarLabel: 'Ajustes',
+          tabBarLabel: t('tabs.settings'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="settings-outline" size={size} color={color} />
           ),

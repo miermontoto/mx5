@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import i18n from '../i18n';
 import { AppSettings } from '../types';
 import { loadSettings, saveSettings, DEFAULT_SETTINGS } from '../utils/storage';
 
@@ -32,12 +33,20 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
   const loadUserSettings = async () => {
     const loadedSettings = await loadSettings();
     setSettings(loadedSettings);
+    // sincroniza el idioma con i18n
+    if (loadedSettings.language) {
+      i18n.changeLanguage(loadedSettings.language);
+    }
   };
 
   const updateSettings = async (newSettings: Partial<AppSettings>) => {
     const updatedSettings = { ...settings, ...newSettings };
     setSettings(updatedSettings);
     await saveSettings(updatedSettings);
+    // sincroniza el idioma con i18n si cambió
+    if (newSettings.language) {
+      i18n.changeLanguage(newSettings.language);
+    }
   };
 
   const reloadSettings = async () => {

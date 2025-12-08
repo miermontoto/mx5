@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Animated, {
   Easing,
   interpolate,
@@ -26,6 +27,7 @@ export const AnimatedCircularGauge: React.FC<AnimatedCircularGaugeProps> = ({
   size = 280,
   strokeWidth = 20,
 }) => {
+  const { t } = useTranslation();
   const { settings } = useSettings();
   const progress = useSharedValue(0);
   const radius = (size - strokeWidth) / 2;
@@ -152,10 +154,10 @@ export const AnimatedCircularGauge: React.FC<AnimatedCircularGaugeProps> = ({
       {/* Center content */}
       <View style={styles.centerContent}>
         <Text style={styles.value}>{value.toFixed(0)}</Text>
-        <Text style={styles.unit}>KM</Text>
+        <Text style={styles.unit}>{t('common.kmUnit')}</Text>
         <View style={styles.divider} />
         <Text style={[styles.percentage, { color: settings.accentColor }]}>{percentage.toFixed(1)}%</Text>
-        <Text style={styles.label}>del límite anual</Text>
+        <Text style={styles.label}>{t('dashboard.ofAnnualLimit')}</Text>
       </View>
     </View>
   );
